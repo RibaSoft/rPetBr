@@ -1,0 +1,11 @@
+.git/
+Assets/
+r-pet/.godot
+r-pet_tray/*.ini
+r-pet_tray/*.dll
+r-pet_tray/*.exe
+r-pet_tray/*.lps
+r-pet_tray/*.res
+r-pet_tray/*.txt
+r-pet_tray/*.conf
+
