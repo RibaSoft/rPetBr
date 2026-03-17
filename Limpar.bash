@@ -10,11 +10,11 @@ clear
 #git config --global user.email "ribamarmsantos@gmail.com"
 #ssh-keygen -t ed25519 -C "ribamarmsantos@gmail.com"
 
-git config --global --add safe.directory /d/Documents/GitHub/rPetBr
-git init
-git branch -M main
-git remote add origin git@github.com:RibaSoft/rPetBr.git
-git pull origin main --allow-unrelated-histories
+#git config --global --add safe.directory /d/Documents/GitHub/rPetBr
+#git init
+#git branch -M main
+#git remote add origin git@github.com:RibaSoft/rPetBr.git
+#git pull origin main --allow-unrelated-histories
 
 git status
 
@@ -25,8 +25,8 @@ clear
 data_hora=$(date +"%Y%m%d_%H%M")
 git add .
 git commit -m "$data_hora"
-git push -u origin main
+#git push -u origin main
+git push origin main
 
 echo "Enviado ao GitHub com sucesso!"
 read -p "";
-clear

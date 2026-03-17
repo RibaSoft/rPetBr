@@ -1,10 +1,14 @@
 extends Node2D
 
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+
+enum anim {aParada, aPendurada, aAndando, aCaindo}
+
 var dragging = false
 var drag_offset = Vector2i()
 var gravity = 1200.0
 var velocity_y = 0.0
-var velocity_x = 80.0
+var velocity_x = 0.0
 var direcao: int = -1
 var no_chao: bool = false
 var AreaDesktop: Rect2i
@@ -12,6 +16,7 @@ var Janelas: Array[Rect2i] = []
 var udp: PacketPeerUDP = PacketPeerUDP.new()
 var udp_cmd: PacketPeerUDP = PacketPeerUDP.new()
 var ColisaoLargura: int = 20
+var animAtual: anim = anim.aParada
 
 func _ready() -> void:
 	AreaDesktop = DisplayServer.screen_get_usable_rect(DisplayServer.get_primary_screen())
@@ -23,12 +28,14 @@ func _ready() -> void:
 	var err_cmd = udp_cmd.bind(4243)
 	if err_cmd != OK:
 		print("Erro ao tentar escutar a porta UDP: ", err_cmd)
+		
+	Anima(anim.aAndando)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			dragging = true
-			drag_offset = Vector2i(get_local_mouse_position())
+			drag_offset = Vector2i(77,37) #Vector2i(get_local_mouse_position())
 			velocity_y = 0.0
 		else:
 			dragging = false
@@ -47,6 +54,7 @@ func _process(delta: float) -> void:
 	if dragging:
 		JanelaPet.position = DisplayServer.mouse_get_position() - drag_offset
 		no_chao = false
+		Anima(anim.aPendurada)
 		return
 		
 	velocity_y += gravity * delta
@@ -95,6 +103,9 @@ func _process(delta: float) -> void:
 			AtualizaFlip()
 			
 		JanelaPet.position.x = NovaPos_x
+		Anima(anim.aAndando)
+	else:
+		Anima(anim.aCaindo)
 
 ################################ PEGAR JANELAS #################################
 func PegarJanelas(data: String):
@@ -120,9 +131,34 @@ func PegarJanelas(data: String):
 			
 		Janelas.append(rect)
 
-func Anima(nome: String) -> void:
-	match nome:
-		"andando": ColisaoLargura = 50
+func Anima(AValue: anim) -> void:
+	match AValue:
+		anim.aAndando:
+			if animAtual != anim.aAndando:
+				ColisaoLargura = 20
+				velocity_x = 130
+				sprite.offset.y = 7
+				sprite.play("andando")
+		anim.aParada:
+			if animAtual != anim.aParada:
+				ColisaoLargura = 70
+				velocity_x = 30
+				sprite.play("parada")
+				sprite.offset.y = 7
+		anim.aPendurada:
+			if animAtual != anim.aPendurada:
+				ColisaoLargura = 20
+				velocity_x = 0
+				sprite.play("pendurada")
+				sprite.offset.y = 0
+		anim.aCaindo:
+			if animAtual != anim.aCaindo:
+				ColisaoLargura = 20
+				velocity_x = 0
+				sprite.play("caindo")
+				sprite.offset.y = 0
+	
+	animAtual = AValue
 
 func AtualizaFlip() -> void:
 	var sprite = $AnimatedSprite2D
@@ -134,4 +170,3 @@ func ProcessaComando(cmd: String) -> void:
 	match cmd:
 		"CMD:fechar":
 			get_tree().quit()
-	
